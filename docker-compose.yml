@@ -23,11 +23,10 @@ services:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      test: ["CMD", "ps", "aux", "|", "grep", "main.py"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
     logging:
       driver: json-file
       options:

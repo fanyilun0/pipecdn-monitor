@@ -63,8 +63,8 @@ def build_message(tokens_points):
     
     message = f"🔍 【{APP_NAME} 状态报告】\n⏰ 时间: {timestamp}\n\n"
     
-    for token_name, points in tokens_points.items():
-        message += f"👤 账户: {token_name}\n💰 当前分数: {points}\n\n"
+    for token_name, (points, change) in tokens_points.items():
+        message += f"👤 账户: {token_name} 💰 当前分数: {points} (+{change})\n"
     
     return message.strip()
 
@@ -105,6 +105,8 @@ async def monitor_single_token(session, token_config):
 async def monitor_points(interval, webhook_url, use_proxy, proxy_url):
     """主监控函数"""
     iteration = 1
+    previous_points = {}  # 用于存储上次的得分
+
     while True:
         try:
             logger.info(f"\n开始第 {iteration} 轮检查...")
@@ -114,7 +116,12 @@ async def monitor_points(interval, webhook_url, use_proxy, proxy_url):
                 for token_config in TOKENS_CONFIG:
                     token_name, points = await monitor_single_token(session, token_config)
                     if points is not None:
-                        tokens_points[token_name] = points
+                        # 计算得分变化
+                        previous = previous_points.get(token_name, 0)
+                        change = points - previous
+                        tokens_points[token_name] = (points, change)
+                        # 更新上次得分
+                        previous_points[token_name] = points
                     await random_delay()
             
             if tokens_points and ALWAYS_NOTIFY:

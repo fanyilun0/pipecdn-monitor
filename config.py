@@ -26,6 +26,6 @@ USE_PROXY = False
 ALWAYS_NOTIFY = True
 SHOW_DETAIL = True
 # 时间配置
-INTERVAL = 10800  # 3小时检查一次
+INTERVAL = 28800  # 8小时检查一次
 TIME_OFFSET = 0 
 
